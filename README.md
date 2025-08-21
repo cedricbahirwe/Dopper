@@ -1,7 +1,5 @@
 # DoperApp
 
-DoperApp is a simple SwiftUI application designed to demonstrate user authentication, state management, and modular code organization. The project features a clean architecture with separate folders for Models, Services, Utilities, and ViewModels, making it easy to maintain and extend.
-
 ## Features
 
 - **Login Screen**: Secure user authentication interface.
@@ -30,8 +28,8 @@ DoperApp is a simple SwiftUI application designed to demonstrate user authentica
 
 To log in, use the following credentials:
 
-- **Username:** emilys
-- **Password:** emilyspass
+- **Username:** `emilys`
+- **Password:** `emilyspass`
 
 ## Requirements
 
