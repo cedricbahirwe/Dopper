@@ -9,11 +9,18 @@
 import KeychainAccess
 import Foundation
 
-class UserKeychainService {
+
+protocol UserStorage {
+    @discardableResult
+    func save(user: DummyUser) -> Bool
+    func getUser() -> DummyUser?
+    func deleteUser()
+}
+
+class UserKeychainService: UserStorage {
     private let keychain = Keychain(service: "com.cedricbahirwe.DoperApp")
     private let key = "currentUser"
 
-    // Save user
     func save(user: DummyUser) -> Bool {
         do {
             let data = try JSONEncoder().encode(user)
@@ -25,7 +32,6 @@ class UserKeychainService {
         }
     }
 
-    // Retrieve user
     func getUser() -> DummyUser? {
         do {
             guard let data = try keychain.getData(key) else { return nil }

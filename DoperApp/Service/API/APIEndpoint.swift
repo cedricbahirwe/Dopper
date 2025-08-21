@@ -9,7 +9,7 @@ import Alamofire
 import Foundation
 
 enum APIEndpoint {
-    case login
+    case login(creds: LoginCred)
     case getUser
 
     var path: String {
@@ -27,21 +27,12 @@ enum APIEndpoint {
         case .getUser:
                 .get
         }
-
-    }
-    var headers: [String: String] {
-        switch self {
-        case .login:
-            [:]
-        case .getUser:
-            ["Authorization": "Bearer YOUR_ACCESS_TOKEN"]
-        }
     }
 
-    var parameters: [String: Any] {
+    var parameters: Parameters? {
         switch self {
         case .login(let creds):
-            creds.parameters
+            creds.dictionary
         case .getUser:
             [:]
         }
@@ -49,6 +40,10 @@ enum APIEndpoint {
 }
 
 extension APIEndpoint: URLRequestConvertible {
+    static func route(_ path: String) -> URL {
+        Constants.baseURL.appendingPathComponent(path)
+    }
+
     func asURLRequest() throws -> URLRequest {
         let url = Constants.baseURL
         var urlRequest = URLRequest(url: url.appendingPathComponent(path))
@@ -58,6 +53,7 @@ extension APIEndpoint: URLRequestConvertible {
             urlRequest,
             with: parameters
         )
+        print("Find", urlRequest)
         return urlRequest
     }
 }

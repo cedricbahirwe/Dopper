@@ -9,15 +9,30 @@ import SwiftUI
 
 class AppState: ObservableObject {
     @Published var user: DummyUser?
-//    let storage =
-
-    init(user: DummyUser? = nil) {
+    private let userStorage: UserStorage
+    init(user: DummyUser? = nil, userStorage: UserStorage = UserKeychainService()) {
         self.user = user
+        self.userStorage = userStorage
+        getUserStoredInfo()
+    }
+
+    func getUserStoredInfo() {
+        self.user = userStorage.getUser()
+    }
+
+    func setUser(_ user: DummyUser?) {
+        if let user {
+            self.user = user
+            userStorage.save(user: user)
+        } else {
+            self.user = nil
+            userStorage.deleteUser()
+        }
     }
 
 
-    func setUser(_ user: DummyUser?) {
-        self.user = user
+    func logout() {
+        self.setUser(nil)
     }
 }
 

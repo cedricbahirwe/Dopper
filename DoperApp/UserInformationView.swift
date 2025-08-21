@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UserInformationView: View {
+    @EnvironmentObject private var appState: AppState
     let user: DummyUser
     var body: some View {
         VStack {
@@ -25,7 +26,14 @@ struct UserInformationView: View {
                 }
 
                 Spacer()
+
+
             }
+
+            Button("Logout", role: .destructive) {
+                appState.logout()
+            }
+            .buttonStyle(.borderedProminent)
 
             Spacer()
 
@@ -37,4 +45,5 @@ struct UserInformationView: View {
 
 #Preview {
     UserInformationView(user: .sample)
+        .environmentObject(AppState())
 }

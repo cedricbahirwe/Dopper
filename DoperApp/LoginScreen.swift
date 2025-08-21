@@ -46,8 +46,19 @@ struct LoginScreen: View {
                 .tint(.white)
             }
             .padding()
-        }
 
+            if loginVM.isLoginInProgress {
+                Color.black.opacity(0.3).ignoresSafeArea()
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .padding(30)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 15))
+                    .shadow(radius: 10)
+            }
+        }
+        .alert(item: $loginVM.alertError) { alert in
+            Alert(title: Text(alert.title), message: Text(alert.message))
+        }
 //        .foregroundStyle(.white)
     }
 }

@@ -8,5 +8,5 @@
 import Foundation
 
 enum Constants {
-    static let baseURL = URL(string: "https://dummyjson.com/")!
+    static let baseURL = URL(string: "https://dummyjson.com")!
 }

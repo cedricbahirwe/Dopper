@@ -17,12 +17,13 @@ struct AlertAction {
     let title: String
     let handler: () -> Void
 }
-protocol AppAlert {
+protocol AppAlert: Identifiable {
     var title: String { get }
     var message: String { get }
     var actions: [AlertAction]? { get }
 }
 struct AlertError: AppAlert {
+    var id: UUID = UUID()
     var title: String
 
     var message: String
@@ -52,16 +53,18 @@ class LoginViewModel: ObservableObject {
             return
         }
 
-        isLoginInProgress = true
+        Task { @MainActor in
+            isLoginInProgress = true
+        }
         do {
-            let userInfo = try await apiService.login(cred: loginCred)
-            isLoginInProgress = false
+            let userInfo: DummyUser = try await apiService .send(endpoint: .login(creds: loginCred))
             Task { @MainActor in
-                self.user = userInfo
+                isLoginInProgress = false
+                user = userInfo
             }
         } catch {
-            isLoginInProgress = false
             Task { @MainActor in
+                isLoginInProgress = false
                 alertError = AlertError(message: error.localizedDescription)
             }
         }
