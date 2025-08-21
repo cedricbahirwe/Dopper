@@ -13,39 +13,53 @@ struct LoginScreen: View {
 
     var body: some View {
         ZStack {
-            VStack(spacing: 20) {
-                Text("Welcome to Doper App!")
-                    .font(.system(size: 30, weight: .bold, design: .default))
+            VStack(alignment: .leading) {
 
-                TextField("Enter your username", text: $loginVM.loginCred.username)
-                    .padding(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(lineWidth: 1)
+                Text("Welcome to \(Text("Doper App!").foregroundStyle(.orange.gradient))")
+                    .font(.system(size: 36, weight: .bold, design: .default))
+
+                VStack(spacing: 20) {
+
+                    TextField("Enter your username", text: $loginVM.loginCred.username)
+                        .padding(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 15)
+                                .stroke(lineWidth: 1)
+                            )
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+
+                    SecureField("Enter your password", text: $loginVM.loginCred.password)
+                        .padding(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 15)
+                                .stroke(lineWidth: 1)
                         )
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
 
-                SecureField("Enter your password", text: $loginVM.loginCred.password)
-                    .padding(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(lineWidth: 1)
-                    )
-                Button(action: {
-                    Task {
-                        await loginVM.login()
-                        let user = loginVM.getUser()
-                        self.appState.setUser(user)
+                    Button(action: {
+                        Task {
+                            await loginVM.login()
+                            let user = loginVM.getUser()
+                            self.appState.setUser(user)
+                        }
+                    }) {
+                        Text("Login")
+                            .bold()
+                            .padding(12)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.orange, in: RoundedRectangle(cornerRadius: 12))
+
                     }
-                }) {
-                    Text("Login")
-                        .padding(12)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.black, in: RoundedRectangle(cornerRadius: 12))
-
+                    .tint(.white)
+                    .padding(.top, 50)
                 }
-                .tint(.white)
+                .frame(maxHeight: .infinity)
+                .scaledToFit()
             }
             .padding()
+
 
             if loginVM.isLoginInProgress {
                 Color.black.opacity(0.3).ignoresSafeArea()
@@ -57,9 +71,8 @@ struct LoginScreen: View {
             }
         }
         .alert(item: $loginVM.alertError) { alert in
-            Alert(title: Text(alert.title), message: Text(alert.message))
+            Alert(title: Text(alert.title), message: Text(alert.message ?? ""))
         }
-//        .foregroundStyle(.white)
     }
 }
 

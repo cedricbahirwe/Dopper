@@ -20,6 +20,7 @@ enum APIEndpoint {
             "/user/me"
         }
     }
+
     var method: HTTPMethod {
         switch self {
         case .login:
@@ -53,7 +54,6 @@ extension APIEndpoint: URLRequestConvertible {
             urlRequest,
             with: parameters
         )
-        print("Find", urlRequest)
         return urlRequest
     }
 }

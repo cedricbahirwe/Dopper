@@ -23,44 +23,95 @@ class APIService {
     }
 
     func send<Response: Decodable>(endpoint: APIEndpoint) async throws -> Response {
-
-//        let user: DummyUser = try await AF.request(url)
-//                .serializingDecodable(DummyUser.self).value
-
-        return try await AF.request(endpoint)
-            .serializingDecodable(Response.self).value
-
-//        return response
-//        self.
-
-//        let fullURL = url.appendingPathComponent(endpoint.path)
+        do {
+            return try await AF.request(endpoint)
+                .validate(statusCodeValidation(request:response:data:))
+                .serializingDecodable(Response.self).value
+        } catch let afError as AFError {
+            if case let .responseValidationFailed(reason) = afError,
+               case let .customValidationFailed(innerError) = reason,
+               let statusError = innerError as? APIStatusCodeError {
+                throw statusError
+            }
+            throw afError // forward anything else
+        }
+    
+//        switch dataResponse.result {
+//        case .success(let value):
+//            return value
+////        case .failure(let error):
+////            throw error
+//        case .failure(let error):
+//            if case .responseSerializationFailed(let reason) = afError {
+//                switch reason {
+//                case .decodingFailed(let underlying):
+//                    throw APIServiceError.decodingError(underlying)
+//                default:
+//                    throw APIServiceError.networkError(afError)
+//                }
+//            }
 //
-//        var request = URLRequest(url: fullURL)
-//        request.httpMethod = "POST"
-//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        endpoint.headers.forEach { key, value in
-//            request.addValue(value, forHTTPHeaderField: key)
+//            if case .responseValidationFailed(let reason) = afError,
+//               case .unacceptableStatusCode(let code) = reason {
+//                throw APIServiceError.serverError(
+//                    status: code,
+//                    data: dataResponse.data
+//                )
+//            }
+//
+//            throw f
 //        }
 
-        // Add the Bear Token if it existing
-
-
 //        do {
-//            request.httpBody = try JSONEncoder().encode(cred)
-//        } catch {
-//            throw APIServiceError.unableToEncode
-//        }
-//
-//        do {
-//            let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
-//
-//            let response = try JSONDecoder().decode(Response.self, from: data)
-//            print("JSON string: \(response)")
+//            let response = try await AF.request(endpoint)
+//                .serializingDecodable(Response.self).value
 //            return response
+//        } catch let afError as AFError {
+//            // Alamofire specific error
+//            if case .responseValidationFailed(let reason) = afError {
+//                switch reason {
+//                case .unacceptableStatusCode(let code):
+//                    let data = try? await AF.request(endpoint)
+//                        .serializingData().value
+//                    throw APIServiceError.serverError(status: code, data: data)
+//                default:
+//                    throw APIServiceError.networkError(afError)
+//                }
+//            }
+//            throw APIServiceError.networkError(afError)
+//        } catch let decodingError as DecodingError {
+//            throw APIServiceError.decodingError(decodingError)
+//        } catch let urlError as URLError {
+//            throw APIServiceError.networkError(urlError)
 //        } catch {
-//            print("Error \(error)")
-//            throw NSError(domain: "", code: -1001, userInfo: [NSLocalizedDescriptionKey: "Failed to load data"])
+//            throw APIServiceError.unknown
 //        }
+    }
 
+    @Sendable
+    private func statusCodeValidation(
+        request: URLRequest?,
+        response: HTTPURLResponse,
+        data: Data?
+    ) -> DataRequest.ValidationResult {
+        if 200..<300 ~= response.statusCode {
+            return .success(())
+        } else {
+            print("we arehere")
+            let decoder = JSONDecoder()
+            if let json = data,
+                let payload = try? decoder.decode(APIMessageError.self, from: json) {
+                let statusError = APIStatusCodeError(
+                    statusCode: response.statusCode,
+                    message: payload.message)
+                return .failure(statusError)
+            }
+
+            let error = APIStatusCodeError(
+                statusCode: response.statusCode,
+                message: data.map { String(decoding: $0, as: UTF8.self) } ?? "Unknown error"
+            )
+            return .failure(error)
+        }
     }
 }

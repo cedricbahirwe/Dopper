@@ -10,40 +10,77 @@ import SwiftUI
 struct UserInformationView: View {
     @EnvironmentObject private var appState: AppState
     let user: DummyUser
+
+    let heeaderBgHeight: CGFloat = 180
+
     var body: some View {
-        VStack {
+        ZStack(alignment: .top) {
+            Color.orange
+                .ignoresSafeArea()
+                .frame(height: heeaderBgHeight)
 
-            Text("User Profile")
-                .font(.largeTitle)
-
-            HStack {
-                AsyncImage(url: user.image)
-                    .frame(width: 60, height: 60)
+            VStack {
+                VStack {
+                    AsyncImage(
+                        url: user.image,
+                        content: { image in
+                            image.resizable()
+                                .scaledToFit()
+                        },
+                        placeholder: {
+                            ProgressView()
+                                .scaleEffect(2)
+                                .tint(.orange)
+                        }
+                    )
+                    .padding(30)
+                    .frame(width: 150, height: 150)
+                    .background(.gray.gradient)
                     .clipShape(.circle)
-                VStack(alignment: .leading) {
-                    Text(user.username)
-                    Text(user.email)
+                    .padding(8)
+                    .background(.black)
+                    .clipShape(.circle)
+                    .shadow(color: .white.opacity(0.3), radius: 10)
+                    .shadow(color: .white.opacity(0.3), radius: 10, y: -5)
+                    .padding(.top, heeaderBgHeight - 75)
+
+                    HStack {
+                        Text(user.firstName)
+                        Text(user.lastName)
+                    }
+                    .font(.title.bold())
+
+                    Form {
+                        LabeledContent("Username", value: user.username)
+                        LabeledContent("Email", value: user.email)
+
+                        Section("Person") {
+                            LabeledContent("Genre", value: user.gender.rawValue.capitalized)
+                        }
+                        .textCase(.none)
+                    }
                 }
 
-                Spacer()
+                Button(role: .destructive) {
+                    appState.logout()
+                } label: {
+                    Text("Logout")
+                        .tint(.red)
+                        .padding(6)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.roundedRectangle(radius: 15))
+                .tint(.red)
 
-
+                .padding()
             }
-
-            Button("Logout", role: .destructive) {
-                appState.logout()
-            }
-            .buttonStyle(.borderedProminent)
-
-            Spacer()
-
-
         }
-        .padding()
     }
 }
 
 #Preview {
     UserInformationView(user: .sample)
         .environmentObject(AppState())
+        .preferredColorScheme(.dark)
 }

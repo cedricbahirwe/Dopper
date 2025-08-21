@@ -9,15 +9,7 @@
 import KeychainAccess
 import Foundation
 
-
-protocol UserStorage {
-    @discardableResult
-    func save(user: DummyUser) -> Bool
-    func getUser() -> DummyUser?
-    func deleteUser()
-}
-
-class UserKeychainService: UserStorage {
+class UserKeychainService: UserStorageProtocol {
     private let keychain = Keychain(service: "com.cedricbahirwe.DoperApp")
     private let key = "currentUser"
 
