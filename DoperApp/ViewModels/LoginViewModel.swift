@@ -13,7 +13,7 @@ struct LoginCred: Encodable {
 }
 
 class LoginViewModel: ObservableObject {
-    @Published var loginCred = LoginCred(username: "emilys", password: "emilyspass")
+    @Published var loginCred = LoginCred(username: "", password: "")
     @Published var user: DummyUser?
     @Published var isLoginInProgress = false
     @Published var alertError: AlertError?

@@ -21,28 +21,7 @@ struct UserInformationView: View {
 
             VStack {
                 VStack {
-                    AsyncImage(
-                        url: user.image,
-                        content: { image in
-                            image.resizable()
-                                .scaledToFit()
-                        },
-                        placeholder: {
-                            ProgressView()
-                                .scaleEffect(2)
-                                .tint(.orange)
-                        }
-                    )
-                    .padding(30)
-                    .frame(width: 150, height: 150)
-                    .background(.gray.gradient)
-                    .clipShape(.circle)
-                    .padding(8)
-                    .background(.black)
-                    .clipShape(.circle)
-                    .shadow(color: .white.opacity(0.3), radius: 10)
-                    .shadow(color: .white.opacity(0.3), radius: 10, y: -5)
-                    .padding(.top, heeaderBgHeight - 75)
+                   userProfileImage
 
                     HStack {
                         Text(user.firstName)
@@ -54,7 +33,7 @@ struct UserInformationView: View {
                         LabeledContent("Username", value: user.username)
                         LabeledContent("Email", value: user.email)
 
-                        Section("Person") {
+                        Section("Other Details") {
                             LabeledContent("Genre", value: user.gender.rawValue.capitalized)
                         }
                         .textCase(.none)
@@ -76,6 +55,31 @@ struct UserInformationView: View {
                 .padding()
             }
         }
+    }
+
+    private var userProfileImage: some View {
+        AsyncImage(
+            url: user.image,
+            content: { image in
+                image.resizable()
+                    .scaledToFit()
+            },
+            placeholder: {
+                ProgressView()
+                    .scaleEffect(2)
+                    .tint(.orange)
+            }
+        )
+        .padding(30)
+        .frame(width: 150, height: 150)
+        .background(.gray.gradient)
+        .clipShape(.circle)
+        .padding(8)
+        .background(.black)
+        .clipShape(.circle)
+        .shadow(color: .white.opacity(0.3), radius: 10)
+        .shadow(color: .white.opacity(0.3), radius: 10, y: -5)
+        .padding(.top, heeaderBgHeight - 75)
     }
 }
 
