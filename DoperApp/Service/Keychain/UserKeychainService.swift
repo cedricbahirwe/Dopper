@@ -19,7 +19,7 @@ class UserKeychainService: UserStorageProtocol {
             try keychain.set(data, key: key)
             return true
         } catch {
-            print("Error saving user to Keychain: \(error)")
+            debugPrint("Error saving user to Keychain: \(error)")
             return false
         }
     }
@@ -30,7 +30,7 @@ class UserKeychainService: UserStorageProtocol {
             let user = try JSONDecoder().decode(DummyUser.self, from: data)
             return user
         } catch {
-            print("Error retrieving user from Keychain: \(error)")
+            debugPrint("Error retrieving user from Keychain: \(error)")
             return nil
         }
     }
