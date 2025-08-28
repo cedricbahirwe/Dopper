@@ -31,10 +31,3 @@ To log in, use the following credentials:
 - **Username:** `emilys`
 - **Password:** `emilyspass`
 
-## Requirements
-
-- Xcode 13 or later
-
-## Author
-
-Cedric Bahirwe
